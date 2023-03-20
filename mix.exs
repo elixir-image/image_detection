@@ -1,4 +1,4 @@
-defmodule Image.MixProject do
+defmodule ImageDetection.MixProject do
   use Mix.Project
 
   @version "0.1.0"
@@ -31,13 +31,12 @@ defmodule Image.MixProject do
 
   defp description do
     """
-    Image library based ML-based object detection.
+    Image library based object detection using the Yolo V8 model..
     """
   end
 
   def application do
     [
-      mod: {Image.Application, []},
       extra_applications: [:logger, :inets, :crypto]
     ]
   end
@@ -47,7 +46,7 @@ defmodule Image.MixProject do
       {:image, "~> 0.27.0"},
       {:nx, "~> 0.5"},
       {:exla, "~> 0.5"},
-      {:axon_onnx, github: "elixir-image/axon_onnx", override: true}
+      {:axon_onnx, github: "elixir-image/axon_onnx"}
     ]
   end
 
@@ -91,28 +90,7 @@ defmodule Image.MixProject do
         "guides/examples.md"
       ],
       formatters: ["html"],
-      groups_for_docs: groups_for_docs(),
       skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]
-    ]
-  end
-
-  defp groups_for_docs do
-    [
-      "Files and streams": &(&1[:subject] == "Load and save"),
-      Operations: &(&1[:subject] == "Operation"),
-      Resize: &(&1[:subject] == "Resize"),
-      Crop: &(&1[:subject] == "Crop"),
-      Transforms: &(&1[:subject] == "Generator"),
-      "Split & Join": &(&1[:subject] == "Split and join"),
-      Color: &(&1[:subject] == "Color"),
-      Information: &(&1[:subject] == "Image info"),
-      Masks: &(&1[:subject] == "Mask"),
-      Metadata: &(&1[:subject] == "Metadata"),
-      "Nx & Evision": &(&1[:subject] == "Matrix"),
-      Preview: &(&1[:subject] == "Display"),
-      Kino: &(&1[:subject] == "Kino"),
-      Guards: &(&1[:subject] == "Guard"),
-      "libvips Configuration": &(&1[:subject] == "Configuration")
     ]
   end
 

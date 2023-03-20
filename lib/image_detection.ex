@@ -56,7 +56,7 @@ defmodule Image.Detection do
 
   @yolo_model_image_size 640
 
-  @classes :image
+  @classes :image_detection
            |> Application.app_dir("priv/models/")
            |> Path.join("coco_classes.txt")
            |> File.read!
@@ -248,7 +248,7 @@ defmodule Image.Detection do
 
   defp default_model_path do
     path =
-      :image
+      :image_detection
       |> Application.app_dir("priv/models/")
       |> Path.join("yolov8n.onnx")
 
