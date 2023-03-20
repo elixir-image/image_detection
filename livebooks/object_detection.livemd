@@ -3,7 +3,8 @@
 ```elixir
 Mix.install([
   {:image_detection, github: "elixir-image/image_detection"},
-  {:kino, "~> 0.9"}
+  {:kino, "~> 0.9"},
+  :req
 ])
 ```
 
@@ -11,26 +12,24 @@ Mix.install([
 
 This livebook is based upon a talk on [object detection by @hansihe](https://www.youtube.com/watch?v=OsxGB6MbA8o&t=1s) at the Warsaw Elixir meeting in March 2023.
 
-Before starting the Yolov8n model needs to be installed. These commands need to be run outside livebook.
+The demo is based upon a development version of the [image_detection](https://github.com/elixir-image/image_detection) library that uses the techniques presented by @hansihe which is also based upon:
 
-1. Ensure Python 3.10 is installed
-2. Install required libraries:
-   ```bash
-      % pip3.10 install ultralytics
-      % pip3.10 install onnx
-   ```
-3. Generate the yolov8n.onnx model
-   ```bash
-      % yolo export model=yolov8n.pt format=onnx imgsz=640
-   ```
-
-Make a note of the pathname to the `yolov8n.onnx` file - its required later on.
+* [image](https://hex.pm/packages/image) for image processing
+* [axon](https://hex.pm/packages/axon) for machine learning model execution
+* [axon_onnx](https://hex.pm/packages/axon_onnx) for leveraging prebuild `.onnx` models
+* [req](https://hex.pm/packages/req) for downloading the `yolov8n.onnx` model
 
 ## Example
 
 ```elixir
-# Save the path to the model file. This will need to be customised for your setup.
-model_path = "/Users/kip/Development/image_detection/priv/models/yolov8n.onnx"
+# Download the Yolo v8n model
+model_path = Path.join(System.tmp_dir!(), "yolov8n.onnx")
+
+unless File.exists?(model_path) do
+  Req.get!("https://github.com/Hyuto/yolov8-onnxruntime-web/raw/master/public/model/yolov8n.onnx",
+    output: model_path
+  )
+end
 ```
 
 <!-- livebook:{"reevaluate_automatically":true} -->
@@ -53,7 +52,7 @@ uploaded_image = Kino.Input.image("Image in which to detect objects")
 
 ```elixir
 # Now run image detection on the image
-# This step just runs object detection and 
+# This step just runs object detection and
 # return a mapping from object classes
 # to bounding boxes
 bounding_boxes = Image.Detection.detect(image, model_path)
@@ -78,7 +77,7 @@ bounding_boxes
 <!-- livebook:{"reevaluate_automatically":true} -->
 
 ```elixir
-# Lets draw the bounding boxes with labels on the 
+# Lets draw the bounding boxes with labels on the
 # original image.
 Image.Detection.draw_bbox_with_labels(bounding_boxes, image)
 ```
