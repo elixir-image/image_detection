@@ -22,33 +22,15 @@ defmodule Image.Detection do
   ```
 
   The "n" model is the smallest - we can maybe tolerate a larger one.
-  And we need to find way to host the model or download the .onnx from
+  And we need to find way to host the model or download the `.onnx` from
   somewhere.
-
-  ### Dependencies
-
-  * The dependencies for this module include some dependencies from github
-    for now, including forks of `axon_onnx` and @hansihe's `yolov8_elixir`.
-    Therefore this module can only be used by cloning the repo and checking out
-    the `detection` branch. It can be configured by:
-
-  ```elixir
-  def deps do
-    [
-      {:image, github: "elixir-image/image", branch: "detect"},
-      {:kino, "~> 0.9"},
-      {:exla, "~> 0.5"},
-      {:axon_onnx, github: "elixir-image/axon_onnx"}
-    ]
-  end
-  ```
 
   ### References
 
   * The original talk by @hansihe is at https://www.youtube.com/watch?v=OsxGB6MbA8o&t=1s
   * The original models are stored at https://github.com/ultralytics/assets/releases
   * Learning: https://learnopencv.com/ultralytics-yolov8/
-  & Exploration: https://medium.com/mlearning-ai/yolo-v8-the-real-state-of-the-art-eda6c86a1b90
+  * Exploration: https://medium.com/mlearning-ai/yolo-v8-the-real-state-of-the-art-eda6c86a1b90
 
   """
 
