@@ -113,7 +113,7 @@ defmodule Image.Detection do
     # re-scaling.
     prepared_image =
       resized_image
-      |> Image.embed!(@yolo_model_image_size, @yolo_model_image_size)
+      |> Image.embed!(@yolo_model_image_size, @yolo_model_image_size, x: 0, y: 0)
 
     # Move the image to Nx. This is nothing more
     # than moving a pointer under the covers
