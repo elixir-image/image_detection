@@ -1,7 +1,7 @@
 defmodule ImageVision.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.4.0"
   @app_name "image_vision"
 
   def project do
@@ -63,11 +63,11 @@ defmodule ImageVision.MixProject do
       {:ortex, "~> 0.1", optional: true},
       #
       # Classification and embedding use Bumblebee servings.
-      {:bumblebee, "~> 0.6", optional: true},
+      {:bumblebee, "~> 0.7", optional: true},
       #
       # Nx and EXLA are required for inference.
-      {:nx, "~> 0.10.0"},
-      {:exla, "~> 0.10"},
+      {:nx, "~> 0.12"},
+      {:exla, "~> 0.12"},
 
       # --- Tooling ---
       {:ex_doc, "~> 0.18", only: [:release, :dev, :docs]},

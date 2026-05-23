@@ -150,6 +150,44 @@ defmodule Image.FaceDetectionTest do
       assert {:error, :no_face_detected} =
                Image.FaceDetection.crop_largest(image, min_score: 0.99)
     end
+
+    test "crop honours EXIF orientation — regression: iPhone photos cropped on wrong region" do
+      # `test/support/images/kip_drinking.jpeg` is an iPhone photo
+      # stored as landscape pixels with `Orientation = Rotate 90 CW`.
+      # Pre-fix, `vips_thumbnail` auto-rotated the model input but
+      # the crop ran against the un-rotated buffer, so the box's
+      # in-frame coords landed on a different region of the photo
+      # (a wine glass) even though the face was detected at score
+      # 0.932. The fix is to autorotate consistently before both
+      # detection and crop.
+      image = Image.open!(Path.join(__DIR__, "support/images/kip_drinking.jpeg"))
+
+      # Sanity-check the fixture itself: this test is only
+      # meaningful if the EXIF orientation actually requires
+      # rotation. If someone re-encodes the fixture and bakes the
+      # rotation into the pixels, the test silently degrades.
+      {:ok, exif} = Image.exif(image)
+      assert Map.get(exif, :orientation) in ["Rotate 90 CW", "Rotate 180", "Rotate 270 CW"]
+
+      assert {:ok, cropped} = Image.FaceDetection.crop_largest(image)
+
+      # The face crop should be a meaningful share of the
+      # autorotated image's area — pre-fix, the box landed at
+      # un-rotated coords and the crop area would be wildly
+      # different (or the box would clamp to a corner).
+      rotated = Image.autorotate!(image)
+      area_ratio =
+        Image.width(cropped) * Image.height(cropped) /
+          (Image.width(rotated) * Image.height(rotated))
+
+      assert area_ratio > 0.02 and area_ratio < 0.5,
+             "expected face crop to be 2%–50% of the autorotated image area, got #{area_ratio}"
+
+      # And the crop should be taller than wide (portrait) — a face
+      # is. Pre-fix on this fixture the crop came out landscape
+      # because it was sliced from the un-rotated frame.
+      assert Image.height(cropped) > Image.width(cropped)
+    end
   end
 
   describe "draw_boxes/3" do

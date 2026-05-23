@@ -126,6 +126,17 @@ if ImageVision.ortex_configured?() do
       repo = Keyword.get(options, :repo, @default_repo)
       model_file = Keyword.get(options, :model_file, @default_model_file)
 
+      # `vips_thumbnail` (used inside `preprocess/1`) auto-applies
+      # the EXIF `Orientation` tag, so the model receives the
+      # upright image. The rest of this function operates on the
+      # same upright frame so `scale_x` / `scale_y` and the box-
+      # clamping `max_width` / `max_height` all agree. Without
+      # this step, iPhone photos (stored as landscape pixels +
+      # `Orientation = 6/8`) detect the face correctly but report
+      # box coordinates that, when applied to the un-rotated
+      # buffer, land elsewhere in the frame.
+      image = Image.autorotate!(image)
+
       model = load_model(repo, model_file)
 
       {tensor, scale_x, scale_y} = preprocess(image)
@@ -190,7 +201,9 @@ if ImageVision.ortex_configured?() do
     * `:padding` is a float in `[0.0, 5.0]` controlling how
       much room is kept around the face. `0.0` is a tight crop
       to the bounding box; `0.5` adds 50% on each side; `1.0`
-      doubles the bounding box. Default `0.2`.
+      doubles the bounding box. Default `0.5` — matches the
+      Cloudflare Images `face-zoom=0.5` default and tends to
+      include shoulders for portrait-style photos.
 
     ### Returns
 
@@ -203,7 +216,13 @@ if ImageVision.ortex_configured?() do
     @spec crop_largest(image :: Vimage.t(), options :: Keyword.t()) ::
             {:ok, Vimage.t()} | {:error, :no_face_detected}
     def crop_largest(%Vimage{} = image, options \\ []) do
-      padding = Keyword.get(options, :padding, 0.2)
+      padding = Keyword.get(options, :padding, 0.5)
+
+      # Detection runs in the EXIF-rotated frame (see comment in
+      # `detect/2`). The crop has to run in the same frame, so we
+      # autorotate here too. Cheap no-op when the image has no
+      # orientation tag or `Orientation = 1`.
+      image = Image.autorotate!(image)
       faces = detect(image, options)
 
       case largest_face(faces) do

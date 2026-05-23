@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0] 2026-05-23
+
+### Updated
+
+* Loosen the default crop in face detection.
+
+## [0.3.0] 2026-05-21
+
+### Updated
+
+* Update `nx` and `exla` to `~> 0.12`.
+
 ## [0.2.0] 2026-05-02
 
 ### Added
