@@ -176,6 +176,7 @@ defmodule Image.FaceDetectionTest do
       # un-rotated coords and the crop area would be wildly
       # different (or the box would clamp to a corner).
       rotated = Image.autorotate!(image)
+
       area_ratio =
         Image.width(cropped) * Image.height(cropped) /
           (Image.width(rotated) * Image.height(rotated))
